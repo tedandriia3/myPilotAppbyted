@@ -1,0 +1,100 @@
+[
+  {
+    "id": 1,
+    "license": "PPL",
+    "subject": "Réglementation",
+    "questionText": "La hauteur minimale de survol d'une ville dont la largeur est comprise entre 1200 m et 3600 m est fixée à :",
+    "options": [
+      "300 m (1000 ft)",
+      "500 m (1600 ft)",
+      "1000 m (3300 ft)",
+      "1500 m (5000 ft)"
+    ],
+    "correctOptionIndex": 2,
+    "explanation": "Pour le survol des villes ou autres agglomérations, la réglementation impose une hauteur minimale de 1000 ft (300 m) au-dessus de l'obstacle le plus élevé dans un rayon de 600 m, mais pour les grandes villes, cette hauteur est portée à 3300 ft (1000 m)."
+  },
+  {
+    "id": 2,
+    "license": "PPL",
+    "subject": "Connaissance générale de l'aéronef",
+    "questionText": "L'instrument qui vous permet de détecter un dérapage est :",
+    "options": [
+      "le conservateur de cap",
+      "la bille",
+      "l'horizon artificiel",
+      "l'indicateur de virage"
+    ],
+    "correctOptionIndex": 1,
+    "explanation": "La bille, située dans l'indicateur de virage, indique la symétrie du vol. Si la bille est décentrée, l'avion dérape (du côté de la bille) ou glisse (à l'opposé de la bille)."
+  },
+  {
+    "id": 3,
+    "license": "PPL",
+    "subject": "Météorologie",
+    "questionText": "Les phénomènes dangereux associés au cumulonimbus sont :",
+    "options": [
+      "Uniquement la foudre",
+      "La grêle, la turbulence, le cisaillement de vent, la foudre",
+      "Uniquement le brouillard",
+      "Le vent calme et une bonne visibilité"
+    ],
+    "correctOptionIndex": 1,
+    "explanation": "Le cumulonimbus (CB) est le nuage le plus dangereux, contenant de forts courants verticaux, de la grêle, du givrage, de la foudre et des turbulences sévères."
+  },
+  {
+    "id": 4,
+    "license": "CPL",
+    "subject": "Performance et Planification",
+    "questionText": "What is the effect of a higher airport elevation on takeoff performance?",
+    "options": [
+      "It improves takeoff performance due to lower air density.",
+      "It has no effect on takeoff performance.",
+      "It degrades takeoff performance, requiring a longer takeoff roll.",
+      "It only affects landing performance."
+    ],
+    "correctOptionIndex": 2,
+    "explanation": "At higher elevations, air density is lower. This reduces engine power output and wing lift, resulting in a longer takeoff roll and a decreased climb rate."
+  },
+  {
+    "id": 5,
+    "license": "CPL",
+    "subject": "Instruments et Systèmes",
+    "questionText": "In an aircraft with a constant-speed propeller, what is the primary purpose of the propeller governor?",
+    "options": [
+      "To control the fuel/air mixture.",
+      "To maintain a constant engine RPM by varying the propeller blade angle.",
+      "To cool the engine.",
+      "To control the aircraft's pitch."
+    ],
+    "correctOptionIndex": 1,
+    "explanation": "The propeller governor is a control unit that automatically adjusts the propeller blade angle to maintain a selected engine RPM, regardless of airspeed or power setting."
+  },
+  {
+    "id": 6,
+    "license": "ATPL",
+    "subject": "Météorologie Avancée",
+    "questionText": "A jet stream is a narrow band of strong winds found in the upper levels of the atmosphere. Where are they typically located?",
+    "options": [
+      "At the top of the stratosphere.",
+      "Near the tropopause.",
+      "In low-level thermal currents.",
+      "Just above sea level."
+    ],
+    "correctOptionIndex": 1,
+    "explanation": "Jet streams are located in the high altitudes of the atmosphere near the tropopause, the boundary between the troposphere and the stratosphere. They are caused by a combination of atmospheric heating and the planet's rotation."
+  },
+  {
+    "id": 7,
+    "license": "ATPL",
+    "subject": "Droit Aérien et Procédures ATC",
+    "questionText": "What is the meaning of 'cleared for the option' by ATC?",
+    "options": [
+      "The pilot is cleared to land only.",
+      "The pilot must perform a go-around.",
+      "The pilot is authorized to perform a touch-and-go, stop-and-go, low approach, or full-stop landing.",
+      "The pilot can choose any runway for landing."
+    ],
+    "correctOptionIndex": 2,
+    "explanation": "A clearance 'for the option' allows the pilot discretion to perform one of several maneuvers on the runway. It is a common clearance in training environments to allow for efficient use of airspace and runways."
+  }
+]
