@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/widget_background"
+    android:clickable="true">
+
+    <TextView
+        android:id="@+id/widget_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PilotPrep"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/widget_text_primary"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/widget_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Niveau 5"
+        android:textSize="12sp"
+        android:textColor="@color/widget_text_secondary"
+        android:gravity="center"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/widget_points"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1,250 XP"
+        android:textSize="11sp"
+        android:textColor="@color/widget_text_secondary"
+        android:gravity="center"
+        android:layout_marginTop="2dp" />
+
+    <TextView
+        android:id="@+id/widget_streak"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="7 jours"
+        android:textSize="10sp"
+        android:textColor="@color/widget_text_accent"
+        android:gravity="center"
+        android:layout_marginTop="4dp" />
+
+</LinearLayout>
+
+
+

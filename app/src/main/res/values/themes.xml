@@ -2,7 +2,9 @@
 <resources>
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.PilotPrepApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.PilotPrepApp" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/aviation_dark_blue</item>
+    </style>
 
     <!-- Thème spécifique pour le Splash Screen -->
     <style name="Theme.PilotPrepApp.SplashScreen" parent="Theme.PilotPrepApp">

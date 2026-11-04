@@ -5,14 +5,32 @@ import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import com.pilotprep.app.viewmodels.BookmarkViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppTopBar(title: String) {
+fun AppTopBar(
+    title: String,
+    navController: NavController,
+    currentLessonId: String? = null,
+    bookmarkViewModel: BookmarkViewModel = hiltViewModel(),
+    showPrint: Boolean = false,
+    onPrintClick: (() -> Unit)? = null
+) {
     var menuExpanded by remember { mutableStateOf(false) }
-    val context = LocalContext.current // On récupère le contexte pour les actions (Toast, Intent)
+    val context = LocalContext.current
+
+    // État du bouton signet
+    val isBookmarked = currentLessonId?.let { bookmarkViewModel.isBookmarked(it) } ?: false
 
     TopAppBar(
         title = { Text(text = title) },
@@ -22,71 +40,99 @@ fun AppTopBar(title: String) {
             actionIconContentColor = MaterialTheme.colorScheme.onPrimary
         ),
         actions = {
-            // Icônes de la barre (inchangées)
-            IconButton(onClick = { /* TODO: Logique pour les favoris */ }) {
-                Icon(Icons.Default.PushPin, contentDescription = "Favoris")
+            // Bouton Imprimer (conditionnel)
+            if (showPrint && onPrintClick != null) {
+                IconButton(onClick = { onPrintClick() }) {
+                    Icon(Icons.Default.Print, contentDescription = "Imprimer")
+                }
             }
-            IconButton(onClick = { /* TODO: Logique pour la recherche */ }) {
+            // Bouton Signet (visible uniquement pour les leçons)
+            currentLessonId?.let { lessonId ->
+                IconButton(
+                    onClick = {
+                        if (isBookmarked) {
+                            bookmarkViewModel.removeBookmark(lessonId)
+                            Toast.makeText(
+                                context,
+                                "Signet supprimé",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            bookmarkViewModel.addBookmark(
+                                lessonId = lessonId,
+                                title = title,
+                                module = "Théorie du Vol", // À adapter selon le contexte
+                                route = "lesson_detail/$lessonId"
+                            )
+                            Toast.makeText(
+                                context,
+                                "Leçon ajoutée aux signets !",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                        contentDescription = if (isBookmarked) "Retirer des signets" else "Ajouter aux signets",
+                        tint = if (isBookmarked) Color(0xFFFFC107) else MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
+
+            // Bouton Recherche
+            IconButton(onClick = { navController.navigate("search") }) {
                 Icon(Icons.Default.Search, contentDescription = "Recherche")
             }
+
+            // Menu Options
             IconButton(onClick = { menuExpanded = true }) {
                 Icon(Icons.Default.MoreVert, contentDescription = "Options")
             }
 
-            // --- MISE À JOUR DU MENU DÉROULANT ---
+            // Menu déroulant
             DropdownMenu(
                 expanded = menuExpanded,
                 onDismissRequest = { menuExpanded = false }
             ) {
-                // 1. Paramètres (anciennement Réglages)
                 DropdownMenuItem(
                     text = { Text("Paramètres") },
                     onClick = {
-                        Toast.makeText(context, "Bientôt disponible : Écran des paramètres", Toast.LENGTH_SHORT).show()
+                        navController.navigate("settings")
                         menuExpanded = false
-                        // TODO: navController.navigate("settings")
                     },
                     leadingIcon = { Icon(Icons.Default.Settings, contentDescription = "Paramètres") }
                 )
 
-                // 2. Historique
                 DropdownMenuItem(
                     text = { Text("Historique") },
                     onClick = {
-                        Toast.makeText(context, "Bientôt disponible : Écran de l'historique", Toast.LENGTH_SHORT).show()
+                        navController.navigate("history")
                         menuExpanded = false
-                        // TODO: navController.navigate("history")
                     },
                     leadingIcon = { Icon(Icons.Default.History, contentDescription = "Historique") }
                 )
 
-                Divider() // Un séparateur visuel
-
-                // 3. Options d'affichage
                 DropdownMenuItem(
-                    text = { Text("Options d'affichage") },
+                    text = { Text("Mes Signets") },
                     onClick = {
-                        Toast.makeText(context, "Bientôt disponible : Options d'affichage", Toast.LENGTH_SHORT).show()
+                        navController.navigate("bookmarks")
                         menuExpanded = false
-                        // TODO: Afficher une boîte de dialogue pour les options
                     },
-                    leadingIcon = { Icon(Icons.Default.TextFormat, contentDescription = "Options d'affichage") }
+                    leadingIcon = { Icon(Icons.Default.Bookmark, contentDescription = "Signets") }
                 )
 
-                // 4. Langue
                 DropdownMenuItem(
                     text = { Text("Langue") },
                     onClick = {
                         Toast.makeText(context, "Bientôt disponible : Changement de langue", Toast.LENGTH_SHORT).show()
                         menuExpanded = false
-                        // TODO: Afficher une boîte de dialogue pour choisir la langue
                     },
                     leadingIcon = { Icon(Icons.Default.Language, contentDescription = "Langue") }
                 )
 
-                Divider() // Un séparateur visuel
+                Divider()
 
-                // 5. Transmettre (Partager)
                 DropdownMenuItem(
                     text = { Text("Transmettre") },
                     onClick = {
@@ -102,16 +148,16 @@ fun AppTopBar(title: String) {
                     leadingIcon = { Icon(Icons.Default.Share, contentDescription = "Transmettre") }
                 )
 
-                // 6. Imprimer
-                DropdownMenuItem(
-                    text = { Text("Imprimer") },
-                    onClick = {
-                        Toast.makeText(context, "Bientôt disponible : Fonction d'impression", Toast.LENGTH_SHORT).show()
-                        menuExpanded = false
-                        // TODO: Implémenter la logique d'impression avec PrintManager
-                    },
-                    leadingIcon = { Icon(Icons.Default.Print, contentDescription = "Imprimer") }
-                )
+                if (showPrint && onPrintClick != null) {
+                    DropdownMenuItem(
+                        text = { Text("Imprimer") },
+                        onClick = {
+                            onPrintClick()
+                            menuExpanded = false
+                        },
+                        leadingIcon = { Icon(Icons.Default.Print, contentDescription = "Imprimer") }
+                    )
+                }
             }
         }
     )

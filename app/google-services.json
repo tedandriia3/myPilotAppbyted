@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "913463724939",
+    "project_id": "pilot-prep-app",
+    "storage_bucket": "pilot-prep-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:913463724939:android:5c31e689a1d074e5c0fd8e",
+        "android_client_info": {
+          "package_name": "com.pilotprep.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "913463724939-5rvllg9115jvn66e5o2daq7526cq4512.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pilotprep.app",
+            "certificate_hash": "9935ef96fa788837aa3b6891eba5c87d4053bccb"
+          }
+        },
+        {
+          "client_id": "913463724939-n6d5ifi7fodp1ef9bre82u6v4ciie5q2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYFdWIm65qOqzx84Z5VVROl0wEYJFBSzQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "913463724939-n6d5ifi7fodp1ef9bre82u6v4ciie5q2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widget Colors -->
+    <color name="widget_background_color">#FFFFFFFF</color>
+    <color name="widget_border_color">#E0E0E0</color>
+    <color name="widget_text_primary">#212121</color>
+    <color name="widget_text_secondary">#757575</color>
+    <color name="widget_text_accent">#1976D2</color>
+    <color name="widget_button_color">#E3F2FD</color>
+    
+    <!-- Widget Descriptions -->
+    <string name="widget_progress_description">Affiche vos statistiques de progression et niveau</string>
+    <string name="widget_weekly_tip_description">Affiche l\'astuce de la semaine</string>
+    <string name="widget_quick_quiz_description">Démarre un quiz rapide</string>
+</resources>
+
+
+

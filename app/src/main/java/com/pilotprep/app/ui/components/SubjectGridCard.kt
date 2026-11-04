@@ -9,22 +9,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.pilotprep.app.util.SharedData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubjectGridCard(title: String, onClick: () -> Unit) {
-    // Cette carte contient uniquement du texte, elle est donc plus simple
+fun SubjectGridCard(
+    title: String, 
+    onClick: () -> Unit,
+    license: String = "",
+    mode: String = ""
+) {
+    val examConfig = if (mode == "exam") {
+        SharedData.getExamConfigFor(license, title)
+    } else null
+
     Card(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp), // Hauteur fixe pour l'uniformité
+            .height(if (examConfig != null) 140.dp else 120.dp), // Plus haut si infos d'examen
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
-        Box(
+        Column(
             modifier = Modifier.fillMaxSize().padding(8.dp),
-            contentAlignment = Alignment.Center
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = title,
@@ -32,6 +42,21 @@ fun SubjectGridCard(title: String, onClick: () -> Unit) {
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.bodyLarge
             )
+            
+            // Afficher les informations d'examen si disponibles
+            examConfig?.let { config ->
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "${config.questionCount} questions",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = SharedData.formatDuration(config.durationMinutes),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }

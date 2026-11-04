@@ -12,20 +12,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.pilotprep.app.ui.components.SubjectGridCard // <-- IMPORT
+import com.pilotprep.app.ui.components.SubjectGridCard
 import com.pilotprep.app.util.SharedData
 
 @Composable
 fun SubjectSelectionScreen(navController: NavController, license: String, mode: String) {
     val title = if (mode == "practice") "Mise en Pratique" else "Simulation d'Examen"
 
-    val isPplExam = license == "PPL" && mode == "exam"
+    // PPL en mode Examen désormais supporté (suppression du placeholder)
 
-    val subjects = when {
-        license == "PPL" && mode == "practice" -> SharedData.pplPracticeSubjects
-        license == "CPL" || license == "ATPL" -> SharedData.allSubjects
-        else -> emptyList()
+    // --- LOGIQUE RESTAURÉE ET CORRIGÉE ---
+    // On choisit la bonne liste de matières en fonction de la licence
+    val subjects = when (license) {
+        "PPL" -> SharedData.pplPracticeSubjects
+        "CPL", "ATPL" -> SharedData.cplAtplPracticeSubjects
+        else -> emptyList() // Cas par défaut
     }
+    // --- FIN DE LA LOGIQUE RESTAURÉE ---
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -35,34 +38,21 @@ fun SubjectSelectionScreen(navController: NavController, license: String, mode: 
         Text("Licence: $license", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (isPplExam) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Ça va être disponible bientôt",
-                    style = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(subjects) { subject ->
+                SubjectGridCard(
+                    title = subject,
+                    license = license,
+                    mode = mode,
+                    onClick = {
+                        navController.navigate("quiz/$license/$subject/$mode")
+                    }
                 )
-            }
-        } else {
-            // --- MODIFICATION ICI : Remplacer LazyColumn par LazyVerticalGrid ---
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2), // 2 colonnes pour plus de lisibilité
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(subjects) { subject ->
-                    // On utilise notre nouveau composant de carte
-                    SubjectGridCard(
-                        title = subject,
-                        onClick = {
-                            navController.navigate("quiz/$license/$subject/$mode")
-                        }
-                    )
-                }
             }
         }
     }

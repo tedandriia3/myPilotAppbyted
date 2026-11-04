@@ -18,14 +18,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.pilotprep.app.R
 
-// La classe de données ne change pas
 data class MenuItem(
     val title: String,
     val route: String,
     val imageResId: Int
 )
 
-// La fonction principale de l'écran ne change pas
 @Composable
 fun MediathequeScreen(navController: NavController) {
     val menuItems = listOf(
@@ -33,7 +31,8 @@ fun MediathequeScreen(navController: NavController) {
         MenuItem("Mise en Pratique", "license_selection/practice", R.drawable.mise_en_pratique),
         MenuItem("Simulation d'Examen", "license_selection/exam", R.drawable.simulation_examen),
         MenuItem("Patrimoine du Ciel", "heritage", R.drawable.patrimoine_ciel),
-        MenuItem("Voix du Ciel", "audio", R.drawable.voix_du_ciel)
+        MenuItem("Voix du Ciel", "audio", R.drawable.voix_du_ciel),
+        MenuItem("ATC Talk", "atc_talk", R.drawable.atc_talk) // Pointe vers la nouvelle image
     )
 
     LazyVerticalGrid(
@@ -52,40 +51,35 @@ fun MediathequeScreen(navController: NavController) {
     }
 }
 
-
-// --- MODIFICATION PRINCIPALE ICI ---
 @Composable
 fun GridCard(title: String, imageResId: Int, onClick: () -> Unit) {
-    // 1. Le composant racine est maintenant une Column. C'est elle qui gère le clic.
     Column(
         modifier = Modifier.clickable(onClick = onClick),
-        horizontalAlignment = Alignment.CenterHorizontally // Centrer la carte et le texte
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 2. La Card contient UNIQUEMENT l'image. Elle sert pour le visuel (ombre, coins arrondis).
         Card(
             modifier = Modifier
-                .fillMaxWidth() // Prend toute la largeur de la cellule de la grille
-                .aspectRatio(1f), // Reste carrée
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                .fillMaxWidth()
+                .aspectRatio(1f),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
         ) {
             Image(
                 painter = painterResource(id = imageResId),
                 contentDescription = title,
-                modifier = Modifier.fillMaxSize(), // L'image remplit la Card
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
         }
-
-        // 3. On ajoute un petit espace entre l'image et le texte
         Spacer(modifier = Modifier.height(8.dp))
-
-        // 4. Le Text est maintenant un enfant de la Column, à l'extérieur de la Card.
         Text(
             text = title,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.SemiBold,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(horizontal = 4.dp) // Un peu de padding pour éviter que le texte ne touche les bords s'il est long
+            modifier = Modifier.padding(horizontal = 4.dp)
         )
     }
 }

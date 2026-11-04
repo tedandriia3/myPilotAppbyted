@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/widget_background"
+    android:clickable="true">
+
+    <TextView
+        android:id="@+id/widget_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Astuce de la Semaine"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textColor="@color/widget_text_primary"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/widget_tip_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Communications Radio"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/widget_text_primary"
+        android:gravity="center"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/widget_tip_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Maîtrisez les communications radio essentielles pour la sécurité en vol..."
+        android:textSize="10sp"
+        android:textColor="@color/widget_text_secondary"
+        android:gravity="center"
+        android:layout_marginTop="4dp"
+        android:maxLines="3"
+        android:ellipsize="end" />
+
+</LinearLayout>
+
+
+

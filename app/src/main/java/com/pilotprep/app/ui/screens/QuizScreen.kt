@@ -1,11 +1,18 @@
 package com.pilotprep.app.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -13,18 +20,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.pilotprep.app.data.local.QuestionEntity
+import coil.compose.rememberAsyncImagePainter
+import com.airbnb.lottie.compose.*
+import com.pilotprep.app.R
+import com.pilotprep.app.data.model.Question
+import com.pilotprep.app.ui.components.MarshallerLoadingAnimation
 import com.pilotprep.app.ui.theme.CorrectGreen
 import com.pilotprep.app.ui.theme.IncorrectRed
-import com.pilotprep.app.ui.viewmodels.QuizViewModel
-import kotlinx.coroutines.delay
-import androidx.compose.material3.Text
-import com.pilotprep.app.ui.components.MarshallerLoadingAnimation
+import com.pilotprep.app.viewmodels.QuizViewModel
 
 @Composable
 fun QuizScreen(
@@ -40,18 +53,7 @@ fun QuizScreen(
         viewModel.startQuiz(license, subject)
     }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
-        if (mode == "exam") {
-            Text(
-                "Mode: Simulation d'Examen",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.error
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
         when {
             uiState.isLoading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -63,7 +65,7 @@ fun QuizScreen(
                     score = uiState.score,
                     totalQuestions = uiState.questions.size,
                     onRestart = { viewModel.startQuiz(license, subject) },
-                    onHome = { navController.popBackStack("home", inclusive = false) }
+                    onHome = { navController.popBackStack("home", false) }
                 )
             }
             uiState.questions.isNotEmpty() -> {
@@ -74,31 +76,41 @@ fun QuizScreen(
                     totalQuestions = uiState.questions.size,
                     selectedOption = uiState.selectedOptionIndex,
                     onOptionSelected = { index -> viewModel.selectOption(index) },
-                    isAnswerRevealed = uiState.selectedOptionIndex != null
                 )
-
-                // This LaunchedEffect will trigger when an answer is selected and revealed
-                if (uiState.selectedOptionIndex != null) {
-                    LaunchedEffect(uiState.currentQuestionIndex) {
-                        delay(3500) // Wait before moving to the next question
-                        viewModel.nextQuestion()
-                    }
-                }
             }
+        }
+
+        AnimatedVisibility(
+            visible = uiState.selectedOptionIndex != null && !uiState.isQuizFinished,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            NextQuestionButton(onClick = { viewModel.nextQuestion() })
         }
     }
 }
 
 @Composable
 fun QuestionContent(
-    question: QuestionEntity,
+    question: Question,
     questionNumber: Int,
     totalQuestions: Int,
     selectedOption: Int?,
-    onOptionSelected: (Int) -> Unit,
-    isAnswerRevealed: Boolean
+    onOptionSelected: (Int) -> Unit
 ) {
-    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+    val isAnswerRevealed = selectedOption != null
+    var showZoomableQuestionImage by remember { mutableStateOf(false) }
+    var showZoomableExplanationImage by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
         Text(
             text = "Question $questionNumber / $totalQuestions",
             style = MaterialTheme.typography.titleMedium
@@ -110,12 +122,30 @@ fun QuestionContent(
             fontWeight = FontWeight.SemiBold,
             lineHeight = 30.sp
         )
+
+        if (question.imageUrl != null) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = question.imageUrl,
+                    placeholder = painterResource(id = R.drawable.ic_heritage)
+                ),
+                contentDescription = "Image de la question",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { showZoomableQuestionImage = true },
+                contentScale = ContentScale.Fit
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
         question.options.forEachIndexed { index, text ->
             OptionItem(
                 text = text,
                 isSelected = index == selectedOption,
-                isCorrect = index == question.correctOptionIndex,
+                isCorrect = index == question.correctOptionIndex.toInt(),
                 isRevealed = isAnswerRevealed,
                 onClick = { if (!isAnswerRevealed) onOptionSelected(index) }
             )
@@ -123,7 +153,7 @@ fun QuestionContent(
         }
 
         if (isAnswerRevealed) {
-            val isCorrect = selectedOption == question.correctOptionIndex
+            val isCorrect = selectedOption == question.correctOptionIndex.toInt()
             Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = if (isCorrect) "Correct!" else "Incorrect",
@@ -132,8 +162,107 @@ fun QuestionContent(
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Explanation: ${question.explanation}", style = MaterialTheme.typography.bodyLarge)
+            Text(text = "Explication : ${question.explanation}", style = MaterialTheme.typography.bodyLarge)
+
+            if (question.explanationImageUrl != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = question.explanationImageUrl,
+                        placeholder = painterResource(id = R.drawable.ic_heritage)
+                    ),
+                    contentDescription = "Image de l'explication",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { showZoomableExplanationImage = true },
+                    contentScale = ContentScale.Fit
+                )
+            }
+
+            Spacer(modifier = Modifier.height(80.dp))
         }
+    }
+
+    if (showZoomableQuestionImage && question.imageUrl != null) {
+        ZoomableImageDialog(
+            imageUrl = question.imageUrl!!,
+            onDismiss = { showZoomableQuestionImage = false }
+        )
+    }
+
+    if (showZoomableExplanationImage && question.explanationImageUrl != null) {
+        ZoomableImageDialog(
+            imageUrl = question.explanationImageUrl!!,
+            onDismiss = { showZoomableExplanationImage = false }
+        )
+    }
+}
+
+@Composable
+fun ZoomableImageDialog(imageUrl: String, onDismiss: () -> Unit) {
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    val state = rememberTransformableState { zoomChange, offsetChange, _ ->
+        scale = (scale * zoomChange).coerceIn(1f, 5f)
+        offset += offsetChange
+    }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(onClick = onDismiss)
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(model = imageUrl),
+                contentDescription = "Image agrandie",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer(
+                        scaleX = scale,
+                        scaleY = scale,
+                        translationX = offset.x,
+                        translationY = offset.y
+                    )
+                    .transformable(state = state)
+            )
+        }
+    }
+}
+
+@Composable
+fun NextQuestionButton(onClick: () -> Unit) {
+    val composition by rememberLottieComposition(
+        spec = LottieCompositionSpec.RawRes(R.raw.lottie_arrow_next)
+    )
+
+    var isPlaying by remember { mutableStateOf(false) }
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        isPlaying = isPlaying
+    )
+
+    LaunchedEffect(progress) {
+        if (progress == 1f) {
+            isPlaying = false
+        }
+    }
+
+    FloatingActionButton(
+        onClick = {
+            isPlaying = true
+            onClick()
+        },
+        shape = CircleShape
+    ) {
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = Modifier.size(48.dp)
+        )
     }
 }
 
@@ -150,7 +279,7 @@ fun OptionItem(
             !isRevealed -> MaterialTheme.colorScheme.surface
             isSelected && isCorrect -> CorrectGreen.copy(alpha = 0.3f)
             isSelected && !isCorrect -> IncorrectRed.copy(alpha = 0.3f)
-            isCorrect -> CorrectGreen.copy(alpha = 0.3f) // Highlight correct answer if wrong one was chosen
+            isCorrect -> CorrectGreen.copy(alpha = 0.3f)
             else -> MaterialTheme.colorScheme.surface
         }, label = "OptionBackgroundColor"
     )
@@ -189,16 +318,16 @@ fun QuizResultScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Quiz Finished!", style = MaterialTheme.typography.headlineMedium)
+        Text("Quiz Terminé !", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Your Score: $score / $totalQuestions", style = MaterialTheme.typography.titleLarge)
+        Text("Votre score: $score / $totalQuestions", style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(32.dp))
         Button(onClick = onRestart) {
-            Text("Try Again")
+            Text("Recommencer")
         }
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedButton(onClick = onHome) {
-            Text("Back to Home")
+            Text("Retour à l'accueil")
         }
     }
 }
